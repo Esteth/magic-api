@@ -1,0 +1,36 @@
+syntax = "proto3";
+package proto;
+
+service Magic {
+    rpc GetWaitTimes(GetWaitTimesRequest) returns (GetWaitTimesResponse);
+
+    rpc GetAttractions(GetAttractionsRequest) returns (GetAttractionsResponse);
+}
+
+message GetWaitTimesRequest {
+    oneof criteria {
+        string park_id = 1;
+        string ride_id = 2;
+    }
+}
+
+message GetWaitTimesResponse {
+    repeated WaitTime wait_time = 1;
+}
+
+message WaitTime {
+    string park_id = 1;
+    string ride_id = 2;
+    int32 wait_time = 3;
+}
+
+message GetAttractionsRequest {}
+
+message GetAttractionsResponse {
+    repeated Attraction attraction = 1;
+}
+
+message Attraction {
+    string id = 1;
+    string name = 2;
+}
