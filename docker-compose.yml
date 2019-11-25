@@ -1,20 +1,27 @@
-version: '3'
+version: '3.1'
 services:
   magic-api:
     build: .
     environment:
       PORT: "5001"
-      DB_HOST: "postgres"
-      DB_PORT: "5432"
-      DB_PASSWORD: "password"
-      DB_USER: "postgres"
-      DB_NAME: "magic"
+      PGUSER: "postgres"
+      PGHOST: "postgres"
+      PGDATABASE: "postgres"
+      PGPASSFILE: "/run/secrets/db_password"
+      ALLOW_REFLECTION: "true"
+    secrets:
+      - db_password
     ports:
     - "5001:5001"
   postgres:
     build:
       context: .
       dockerfile: db.Dockerfile
+    secrets:
+      - db_password
     environment:
-      POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "magic"
+      POSTGRES_PASSWORD_FILE: "/run/secrets/db_password"
+secrets:
+  db_password:
+    file: db_password.txt

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	pb "esteth.net/magic/api/proto"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type server struct {
@@ -42,18 +44,27 @@ func (s *server) GetAttractions(ctx context.Context, in *pb.GetAttractionsReques
 }
 
 func main() {
-	port, err := strconv.Atoi(env.ReadEnv("PORT"))
+	port, err := strconv.Atoi(env.ReadEnvOr("PORT", "5002"))
 	if err != nil {
 		log.Fatalf("could not parse PORT as int: %v", err)
 	}
-	dbHost := env.ReadEnv("DB_HOST")
-	dbPort, err := strconv.Atoi(env.ReadEnv("DB_PORT"))
+	dbHost := env.ReadEnvOr("PGHOST", "localhost")
+	dbPort, err := strconv.Atoi(env.ReadEnvOr("PGPORT", "5432"))
 	if err != nil {
 		log.Fatalf("could not parse DB_PORT as int: %v", err)
 	}
-	dbUser := env.ReadEnv("DB_USER")
-	dbPassword := env.ReadEnv("DB_PASSWORD")
-	dbName := env.ReadEnv("DB_NAME")
+	dbUser := env.ReadEnvOr("PGUSER", "postgres")
+	dbPasswordFile := env.ReadEnv("PGPASSFILE")
+	dbPassword, err := ioutil.ReadFile(dbPasswordFile)
+	if err != nil {
+		log.Fatalf("could not read PGPASSFILE %s: %v", dbPasswordFile, err)
+	}
+	dbName := env.ReadEnvOr("PGDATABASE", "postgres")
+
+	hasReflection, err := strconv.ParseBool(env.ReadEnvOr("ALLOW_REFLECTION", "false"))
+	if err != nil {
+		log.Fatalf("could not parse ALLOW_REFLECTION environment variable as boolean: %v", err)
+	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
@@ -77,6 +88,9 @@ func main() {
 	pb.RegisterMagicServer(s, &server{
 		db: db,
 	})
+	if hasReflection {
+		reflection.Register(s)
+	}
 	fmt.Printf("listening on port %d...\n", port)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
