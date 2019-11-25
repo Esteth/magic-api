@@ -6,7 +6,7 @@ services:
       PORT: "5001"
       PGUSER: "postgres"
       PGHOST: "postgres"
-      PGDATABASE: "postgres"
+      PGDATABASE: "magic"
       PGPASSFILE: "/run/secrets/db_password"
       ALLOW_REFLECTION: "true"
     secrets:
