@@ -11,7 +11,6 @@ import (
 	"esteth.net/magic/api/data"
 	"esteth.net/magic/api/env"
 	pb "esteth.net/magic/api/proto"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -21,22 +20,22 @@ type server struct {
 	db *data.DB
 }
 
-func (s *server) GetWaitTimes(ctx context.Context, in *pb.GetWaitTimesRequest) (*pb.GetWaitTimesResponse, error) {
+func (s *server) GetWaitTimes(_ context.Context, in *pb.GetWaitTimesRequest) (*pb.GetWaitTimesResponse, error) {
 	log.Printf("GetWaitTimes: %v", in)
 	waitTimes, err := s.db.GetWaitTimes(in.GetParkId())
 	if err != nil {
-		return nil, errors.Wrap(err, "could not get wait times")
+		return nil, fmt.Errorf("could not get wait times: %w", err)
 	}
 	return &pb.GetWaitTimesResponse{
 		WaitTime: waitTimes,
 	}, nil
 }
 
-func (s *server) GetAttractions(ctx context.Context, in *pb.GetAttractionsRequest) (*pb.GetAttractionsResponse, error) {
+func (s *server) GetAttractions(_ context.Context, in *pb.GetAttractionsRequest) (*pb.GetAttractionsResponse, error) {
 	log.Printf("GetAttractions: %v", in)
 	attractions, err := s.db.GetAttractions()
 	if err != nil {
-		return nil, errors.Wrap(err, "could not get attractions")
+		return nil, fmt.Errorf("could not get attractions: %w", err)
 	}
 	return &pb.GetAttractionsResponse{
 		Attraction: attractions,
