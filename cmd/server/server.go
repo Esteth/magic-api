@@ -20,9 +20,20 @@ type server struct {
 	db *data.DB
 }
 
+func (s *server) GetWaitHistory(_ context.Context, in *pb.GetWaitHistoryRequest) (*pb.GetWaitTimesResponse, error) {
+	log.Printf("GetWaitHistory: %v", in)
+	waitTimes, err := s.db.GetWaitHistory(in.GetAttractionId())
+	if err != nil {
+		return nil, fmt.Errorf("could not get wait history: %w", err)
+	}
+	return &pb.GetWaitTimesResponse{
+		WaitTime: waitTimes,
+	}, nil
+}
+
 func (s *server) GetWaitTimes(_ context.Context, in *pb.GetWaitTimesRequest) (*pb.GetWaitTimesResponse, error) {
-	log.Printf("GetWaitTimes: %v", in)
-	waitTimes, err := s.db.GetWaitTimes(in.GetParkId())
+	log.Printf("GetWaitTiems: %v", in)
+	waitTimes, err := s.db.GetWaitTimes() // TODO: Respect in.ParkId
 	if err != nil {
 		return nil, fmt.Errorf("could not get wait times: %w", err)
 	}

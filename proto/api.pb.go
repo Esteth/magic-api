@@ -7,6 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -25,13 +26,10 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type GetWaitTimesRequest struct {
-	// Types that are valid to be assigned to Criteria:
-	//	*GetWaitTimesRequest_ParkId
-	//	*GetWaitTimesRequest_RideId
-	Criteria             isGetWaitTimesRequest_Criteria `protobuf_oneof:"criteria"`
-	XXX_NoUnkeyedLiteral struct{}                       `json:"-"`
-	XXX_unrecognized     []byte                         `json:"-"`
-	XXX_sizecache        int32                          `json:"-"`
+	ParkId               string   `protobuf:"bytes,2,opt,name=park_id,json=parkId,proto3" json:"park_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *GetWaitTimesRequest) Reset()         { *m = GetWaitTimesRequest{} }
@@ -59,49 +57,50 @@ func (m *GetWaitTimesRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetWaitTimesRequest proto.InternalMessageInfo
 
-type isGetWaitTimesRequest_Criteria interface {
-	isGetWaitTimesRequest_Criteria()
-}
-
-type GetWaitTimesRequest_ParkId struct {
-	ParkId string `protobuf:"bytes,1,opt,name=park_id,json=parkId,proto3,oneof"`
-}
-
-type GetWaitTimesRequest_RideId struct {
-	RideId string `protobuf:"bytes,2,opt,name=ride_id,json=rideId,proto3,oneof"`
-}
-
-func (*GetWaitTimesRequest_ParkId) isGetWaitTimesRequest_Criteria() {}
-
-func (*GetWaitTimesRequest_RideId) isGetWaitTimesRequest_Criteria() {}
-
-func (m *GetWaitTimesRequest) GetCriteria() isGetWaitTimesRequest_Criteria {
-	if m != nil {
-		return m.Criteria
-	}
-	return nil
-}
-
 func (m *GetWaitTimesRequest) GetParkId() string {
-	if x, ok := m.GetCriteria().(*GetWaitTimesRequest_ParkId); ok {
-		return x.ParkId
+	if m != nil {
+		return m.ParkId
 	}
 	return ""
 }
 
-func (m *GetWaitTimesRequest) GetRideId() string {
-	if x, ok := m.GetCriteria().(*GetWaitTimesRequest_RideId); ok {
-		return x.RideId
-	}
-	return ""
+type GetWaitHistoryRequest struct {
+	AttractionId         string   `protobuf:"bytes,1,opt,name=attraction_id,json=attractionId,proto3" json:"attraction_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*GetWaitTimesRequest) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetWaitTimesRequest_ParkId)(nil),
-		(*GetWaitTimesRequest_RideId)(nil),
+func (m *GetWaitHistoryRequest) Reset()         { *m = GetWaitHistoryRequest{} }
+func (m *GetWaitHistoryRequest) String() string { return proto.CompactTextString(m) }
+func (*GetWaitHistoryRequest) ProtoMessage()    {}
+func (*GetWaitHistoryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
+}
+
+func (m *GetWaitHistoryRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetWaitHistoryRequest.Unmarshal(m, b)
+}
+func (m *GetWaitHistoryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetWaitHistoryRequest.Marshal(b, m, deterministic)
+}
+func (m *GetWaitHistoryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetWaitHistoryRequest.Merge(m, src)
+}
+func (m *GetWaitHistoryRequest) XXX_Size() int {
+	return xxx_messageInfo_GetWaitHistoryRequest.Size(m)
+}
+func (m *GetWaitHistoryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetWaitHistoryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetWaitHistoryRequest proto.InternalMessageInfo
+
+func (m *GetWaitHistoryRequest) GetAttractionId() string {
+	if m != nil {
+		return m.AttractionId
 	}
+	return ""
 }
 
 type GetWaitTimesResponse struct {
@@ -115,7 +114,7 @@ func (m *GetWaitTimesResponse) Reset()         { *m = GetWaitTimesResponse{} }
 func (m *GetWaitTimesResponse) String() string { return proto.CompactTextString(m) }
 func (*GetWaitTimesResponse) ProtoMessage()    {}
 func (*GetWaitTimesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
 }
 
 func (m *GetWaitTimesResponse) XXX_Unmarshal(b []byte) error {
@@ -144,19 +143,20 @@ func (m *GetWaitTimesResponse) GetWaitTime() []*WaitTime {
 }
 
 type WaitTime struct {
-	ParkId               string   `protobuf:"bytes,1,opt,name=park_id,json=parkId,proto3" json:"park_id,omitempty"`
-	RideId               string   `protobuf:"bytes,2,opt,name=ride_id,json=rideId,proto3" json:"ride_id,omitempty"`
-	WaitTime             int32    `protobuf:"varint,3,opt,name=wait_time,json=waitTime,proto3" json:"wait_time,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	ParkId               string               `protobuf:"bytes,1,opt,name=park_id,json=parkId,proto3" json:"park_id,omitempty"`
+	AttractionId         string               `protobuf:"bytes,2,opt,name=attraction_id,json=attractionId,proto3" json:"attraction_id,omitempty"`
+	WaitTime             int32                `protobuf:"varint,3,opt,name=wait_time,json=waitTime,proto3" json:"wait_time,omitempty"`
+	LastUpdated          *timestamp.Timestamp `protobuf:"bytes,4,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
 }
 
 func (m *WaitTime) Reset()         { *m = WaitTime{} }
 func (m *WaitTime) String() string { return proto.CompactTextString(m) }
 func (*WaitTime) ProtoMessage()    {}
 func (*WaitTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{3}
 }
 
 func (m *WaitTime) XXX_Unmarshal(b []byte) error {
@@ -184,9 +184,9 @@ func (m *WaitTime) GetParkId() string {
 	return ""
 }
 
-func (m *WaitTime) GetRideId() string {
+func (m *WaitTime) GetAttractionId() string {
 	if m != nil {
-		return m.RideId
+		return m.AttractionId
 	}
 	return ""
 }
@@ -198,7 +198,15 @@ func (m *WaitTime) GetWaitTime() int32 {
 	return 0
 }
 
+func (m *WaitTime) GetLastUpdated() *timestamp.Timestamp {
+	if m != nil {
+		return m.LastUpdated
+	}
+	return nil
+}
+
 type GetAttractionsRequest struct {
+	ParkId               string   `protobuf:"bytes,1,opt,name=park_id,json=parkId,proto3" json:"park_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -208,7 +216,7 @@ func (m *GetAttractionsRequest) Reset()         { *m = GetAttractionsRequest{} }
 func (m *GetAttractionsRequest) String() string { return proto.CompactTextString(m) }
 func (*GetAttractionsRequest) ProtoMessage()    {}
 func (*GetAttractionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{3}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{4}
 }
 
 func (m *GetAttractionsRequest) XXX_Unmarshal(b []byte) error {
@@ -229,6 +237,13 @@ func (m *GetAttractionsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetAttractionsRequest proto.InternalMessageInfo
 
+func (m *GetAttractionsRequest) GetParkId() string {
+	if m != nil {
+		return m.ParkId
+	}
+	return ""
+}
+
 type GetAttractionsResponse struct {
 	Attraction           []*Attraction `protobuf:"bytes,1,rep,name=attraction,proto3" json:"attraction,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
@@ -240,7 +255,7 @@ func (m *GetAttractionsResponse) Reset()         { *m = GetAttractionsResponse{}
 func (m *GetAttractionsResponse) String() string { return proto.CompactTextString(m) }
 func (*GetAttractionsResponse) ProtoMessage()    {}
 func (*GetAttractionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{4}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{5}
 }
 
 func (m *GetAttractionsResponse) XXX_Unmarshal(b []byte) error {
@@ -280,7 +295,7 @@ func (m *Attraction) Reset()         { *m = Attraction{} }
 func (m *Attraction) String() string { return proto.CompactTextString(m) }
 func (*Attraction) ProtoMessage()    {}
 func (*Attraction) Descriptor() ([]byte, []int) {
-	return fileDescriptor_00212fb1f9d3bf1c, []int{5}
+	return fileDescriptor_00212fb1f9d3bf1c, []int{6}
 }
 
 func (m *Attraction) XXX_Unmarshal(b []byte) error {
@@ -317,6 +332,7 @@ func (m *Attraction) GetName() string {
 
 func init() {
 	proto.RegisterType((*GetWaitTimesRequest)(nil), "proto.GetWaitTimesRequest")
+	proto.RegisterType((*GetWaitHistoryRequest)(nil), "proto.GetWaitHistoryRequest")
 	proto.RegisterType((*GetWaitTimesResponse)(nil), "proto.GetWaitTimesResponse")
 	proto.RegisterType((*WaitTime)(nil), "proto.WaitTime")
 	proto.RegisterType((*GetAttractionsRequest)(nil), "proto.GetAttractionsRequest")
@@ -327,26 +343,31 @@ func init() {
 func init() { proto.RegisterFile("api.proto", fileDescriptor_00212fb1f9d3bf1c) }
 
 var fileDescriptor_00212fb1f9d3bf1c = []byte{
-	// 298 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x91, 0xcb, 0x4a, 0xc3, 0x40,
-	0x14, 0x86, 0x4d, 0x6a, 0x6a, 0x72, 0x94, 0x8a, 0xe3, 0x25, 0x35, 0x55, 0x08, 0x59, 0x65, 0x21,
-	0x45, 0xeb, 0x13, 0x28, 0x42, 0x2c, 0xd2, 0x4d, 0x10, 0x8a, 0xab, 0x32, 0x26, 0x83, 0x1c, 0x24,
-	0x17, 0x27, 0x47, 0xfa, 0x38, 0xbe, 0xaa, 0x24, 0x9d, 0x5c, 0x1a, 0xeb, 0x2a, 0xc3, 0xff, 0xfd,
-	0x9c, 0xf9, 0xe6, 0x04, 0x2c, 0x9e, 0xe3, 0x34, 0x97, 0x19, 0x65, 0xcc, 0xa8, 0x3e, 0xde, 0x12,
-	0x4e, 0x03, 0x41, 0x4b, 0x8e, 0xf4, 0x8a, 0x89, 0x28, 0x42, 0xf1, 0xf5, 0x2d, 0x0a, 0x62, 0x97,
-	0x70, 0x90, 0x73, 0xf9, 0xb9, 0xc2, 0x78, 0xac, 0xb9, 0x9a, 0x6f, 0x3d, 0xef, 0x85, 0xc3, 0x32,
-	0x98, 0xc7, 0x25, 0x92, 0x18, 0x8b, 0x12, 0xe9, 0x35, 0x2a, 0x83, 0x79, 0xfc, 0x08, 0x60, 0x46,
-	0x12, 0x49, 0x48, 0xe4, 0xde, 0x13, 0x9c, 0x6d, 0x0f, 0x2e, 0xf2, 0x2c, 0x2d, 0x04, 0xbb, 0x01,
-	0x6b, 0xcd, 0x91, 0x56, 0x84, 0x89, 0x18, 0x6b, 0xee, 0xc0, 0x3f, 0x9c, 0x1d, 0x6f, 0x94, 0xa6,
-	0x75, 0x39, 0x34, 0xd7, 0xea, 0xe4, 0xbd, 0x81, 0x59, 0xa7, 0xcc, 0xee, 0x39, 0x35, 0x46, 0x76,
-	0xcf, 0xa8, 0xf6, 0x61, 0x93, 0xee, 0x5d, 0x03, 0x57, 0xf3, 0x8d, 0xce, 0x68, 0x1b, 0xce, 0x03,
-	0x41, 0x0f, 0x44, 0x92, 0x47, 0x84, 0x59, 0x5a, 0xbf, 0xdd, 0x7b, 0x81, 0x8b, 0x3e, 0x50, 0xee,
-	0x77, 0x00, 0xbc, 0x89, 0x95, 0xfc, 0x89, 0x92, 0x6f, 0xfb, 0x61, 0xa7, 0xe4, 0xdd, 0x02, 0xb4,
-	0x84, 0x8d, 0x40, 0x6f, 0xec, 0x75, 0x8c, 0x19, 0x83, 0xfd, 0x94, 0x27, 0x42, 0x69, 0x57, 0xe7,
-	0xd9, 0x8f, 0x06, 0xc6, 0x82, 0x7f, 0x60, 0xc4, 0x02, 0x38, 0xea, 0xae, 0x90, 0x39, 0xea, 0xaa,
-	0x1d, 0x3f, 0xcc, 0x99, 0xec, 0x64, 0xca, 0x7b, 0x01, 0xa3, 0xed, 0x17, 0xb1, 0xab, 0xb6, 0xfe,
-	0x77, 0x03, 0xce, 0xf5, 0x3f, 0x74, 0x33, 0xee, 0x7d, 0x58, 0xd1, 0xfb, 0xdf, 0x00, 0x00, 0x00,
-	0xff, 0xff, 0xf4, 0x55, 0xee, 0x0f, 0x4e, 0x02, 0x00, 0x00,
+	// 377 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x92, 0xcf, 0x4e, 0xea, 0x40,
+	0x14, 0xc6, 0x33, 0xe5, 0xcf, 0x85, 0x03, 0x97, 0x9b, 0x3b, 0xf7, 0xaa, 0xa4, 0x68, 0x6c, 0xc6,
+	0x4d, 0x17, 0xa6, 0x20, 0x6e, 0x75, 0x61, 0x62, 0x82, 0x84, 0xb0, 0x69, 0x30, 0x2e, 0xc9, 0x40,
+	0x47, 0x32, 0x11, 0x98, 0xda, 0x0e, 0x21, 0xbe, 0x8f, 0x8f, 0xe7, 0x43, 0x98, 0x4e, 0xa7, 0x74,
+	0x2a, 0xe8, 0xaa, 0x33, 0x73, 0xbe, 0x73, 0xbe, 0x2f, 0xbf, 0x1e, 0xa8, 0xd3, 0x90, 0x7b, 0x61,
+	0x24, 0xa4, 0xc0, 0x15, 0xf5, 0xb1, 0xcf, 0x17, 0x42, 0x2c, 0x96, 0xac, 0xab, 0x6e, 0xb3, 0xcd,
+	0x73, 0x57, 0xf2, 0x15, 0x8b, 0x25, 0x5d, 0x85, 0xa9, 0x8e, 0x78, 0xf0, 0x6f, 0xc0, 0xe4, 0x13,
+	0xe5, 0x72, 0x92, 0x54, 0x7c, 0xf6, 0xba, 0x61, 0xb1, 0xc4, 0x27, 0xf0, 0x2b, 0xa4, 0xd1, 0xcb,
+	0x94, 0x07, 0x6d, 0xcb, 0x41, 0x6e, 0xdd, 0xaf, 0x26, 0xd7, 0x61, 0x40, 0x6e, 0xe0, 0x48, 0xeb,
+	0x1f, 0x78, 0x2c, 0x45, 0xf4, 0x96, 0x75, 0x5c, 0xc0, 0x6f, 0x2a, 0x65, 0x44, 0xe7, 0x92, 0x8b,
+	0x75, 0xd2, 0x87, 0x54, 0x5f, 0x33, 0x7f, 0x1c, 0x06, 0xe4, 0x1e, 0xfe, 0x17, 0xdd, 0xe2, 0x50,
+	0xac, 0x63, 0x86, 0x2f, 0xa1, 0xbe, 0xa5, 0x5c, 0x4e, 0x93, 0x74, 0x6d, 0xe4, 0x94, 0xdc, 0x46,
+	0xff, 0x4f, 0x1a, 0xd0, 0xcb, 0xc4, 0x7e, 0x6d, 0xab, 0x4f, 0xe4, 0x1d, 0x41, 0x2d, 0x7b, 0x36,
+	0x93, 0x22, 0x33, 0xe9, 0x7e, 0x20, 0x6b, 0x3f, 0x10, 0xee, 0x98, 0xc6, 0x25, 0x07, 0xb9, 0x95,
+	0xdc, 0x07, 0xdf, 0x42, 0x73, 0x49, 0x63, 0x39, 0xdd, 0x84, 0x01, 0x95, 0x2c, 0x68, 0x97, 0x1d,
+	0xe4, 0x36, 0xfa, 0xb6, 0x97, 0x32, 0xf5, 0x32, 0xa6, 0xde, 0x24, 0x63, 0xea, 0x37, 0x12, 0xfd,
+	0x63, 0x2a, 0x27, 0x3d, 0x85, 0xea, 0x6e, 0x67, 0x77, 0x08, 0x6e, 0x21, 0x32, 0x19, 0xc1, 0xf1,
+	0xd7, 0x0e, 0x0d, 0xe8, 0x0a, 0x20, 0xcf, 0xad, 0x09, 0xfd, 0xd5, 0x84, 0x72, 0xbd, 0x6f, 0x88,
+	0x48, 0x0f, 0x20, 0xaf, 0xe0, 0x16, 0x58, 0x3b, 0x3b, 0x8b, 0x07, 0x18, 0x43, 0x79, 0x4d, 0x57,
+	0x4c, 0x43, 0x51, 0xe7, 0xfe, 0x07, 0x82, 0xca, 0x98, 0x2e, 0xf8, 0x1c, 0x0f, 0xa0, 0x69, 0xfe,
+	0x27, 0x6c, 0x6b, 0xab, 0x03, 0xab, 0x62, 0x77, 0x0e, 0xd6, 0x74, 0xee, 0x11, 0xb4, 0x8a, 0xeb,
+	0x82, 0x4f, 0x8b, 0xf2, 0xe2, 0x16, 0xfd, 0x3c, 0x6c, 0xac, 0x86, 0x19, 0x78, 0xcc, 0x61, 0xfb,
+	0x9c, 0xed, 0xb3, 0x6f, 0xaa, 0xe9, 0xb8, 0x59, 0x55, 0x55, 0xaf, 0x3f, 0x03, 0x00, 0x00, 0xff,
+	0xff, 0xe8, 0xfe, 0xb9, 0xf5, 0x36, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -362,6 +383,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MagicClient interface {
 	GetWaitTimes(ctx context.Context, in *GetWaitTimesRequest, opts ...grpc.CallOption) (*GetWaitTimesResponse, error)
+	GetWaitHistory(ctx context.Context, in *GetWaitHistoryRequest, opts ...grpc.CallOption) (*GetWaitTimesResponse, error)
 	GetAttractions(ctx context.Context, in *GetAttractionsRequest, opts ...grpc.CallOption) (*GetAttractionsResponse, error)
 }
 
@@ -382,6 +404,15 @@ func (c *magicClient) GetWaitTimes(ctx context.Context, in *GetWaitTimesRequest,
 	return out, nil
 }
 
+func (c *magicClient) GetWaitHistory(ctx context.Context, in *GetWaitHistoryRequest, opts ...grpc.CallOption) (*GetWaitTimesResponse, error) {
+	out := new(GetWaitTimesResponse)
+	err := c.cc.Invoke(ctx, "/proto.Magic/GetWaitHistory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *magicClient) GetAttractions(ctx context.Context, in *GetAttractionsRequest, opts ...grpc.CallOption) (*GetAttractionsResponse, error) {
 	out := new(GetAttractionsResponse)
 	err := c.cc.Invoke(ctx, "/proto.Magic/GetAttractions", in, out, opts...)
@@ -394,6 +425,7 @@ func (c *magicClient) GetAttractions(ctx context.Context, in *GetAttractionsRequ
 // MagicServer is the server API for Magic service.
 type MagicServer interface {
 	GetWaitTimes(context.Context, *GetWaitTimesRequest) (*GetWaitTimesResponse, error)
+	GetWaitHistory(context.Context, *GetWaitHistoryRequest) (*GetWaitTimesResponse, error)
 	GetAttractions(context.Context, *GetAttractionsRequest) (*GetAttractionsResponse, error)
 }
 
@@ -403,6 +435,9 @@ type UnimplementedMagicServer struct {
 
 func (*UnimplementedMagicServer) GetWaitTimes(ctx context.Context, req *GetWaitTimesRequest) (*GetWaitTimesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWaitTimes not implemented")
+}
+func (*UnimplementedMagicServer) GetWaitHistory(ctx context.Context, req *GetWaitHistoryRequest) (*GetWaitTimesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWaitHistory not implemented")
 }
 func (*UnimplementedMagicServer) GetAttractions(ctx context.Context, req *GetAttractionsRequest) (*GetAttractionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttractions not implemented")
@@ -426,6 +461,24 @@ func _Magic_GetWaitTimes_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MagicServer).GetWaitTimes(ctx, req.(*GetWaitTimesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Magic_GetWaitHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWaitHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MagicServer).GetWaitHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Magic/GetWaitHistory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MagicServer).GetWaitHistory(ctx, req.(*GetWaitHistoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -455,6 +508,10 @@ var _Magic_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWaitTimes",
 			Handler:    _Magic_GetWaitTimes_Handler,
+		},
+		{
+			MethodName: "GetWaitHistory",
+			Handler:    _Magic_GetWaitHistory_Handler,
 		},
 		{
 			MethodName: "GetAttractions",

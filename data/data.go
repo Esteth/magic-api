@@ -7,6 +7,7 @@ import (
 	"time"
 
 	pb "esteth.net/magic/api/proto"
+	wkt_timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/lib/pq" // driver for database/sql
 )
 
@@ -41,8 +42,8 @@ func Dial(connString string) (*DB, error) {
 	return &DB{db}, nil
 }
 
-func (db *DB) GetWaitTimes(attractionID string) ([]*pb.WaitTime, error) {
-	rows, err := db.Query("SELECT wait_time, timestamp FROM wait_times WHERE attraction_id = $1 ORDER BY timestamp DESC LIMIT 1", attractionID)
+func (db *DB) GetWaitHistory(attractionID string) ([]*pb.WaitTime, error) {
+	rows, err := db.Query("SELECT wait_time, timestamp FROM wait_times WHERE attraction_id = $1 ORDER BY timestamp DESC LIMIT 100", attractionID)
 	if err != nil {
 		return nil, fmt.Errorf("could not issue query: %w", err)
 	}
@@ -56,13 +57,64 @@ func (db *DB) GetWaitTimes(attractionID string) ([]*pb.WaitTime, error) {
 
 	for rows.Next() {
 		var waitTime int32
-		var timestamp int64
+		var timestamp time.Time
 		err := rows.Scan(&waitTime, &timestamp)
 		if err != nil {
 			return nil, fmt.Errorf("could not scan row: %w", err)
 		}
 		results = append(results, &pb.WaitTime{
-			WaitTime: waitTime,
+			AttractionId: attractionID,
+			WaitTime:     waitTime,
+			LastUpdated: &wkt_timestamp.Timestamp{
+				Seconds: timestamp.Unix(),
+			},
+		})
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("error encountered in rows after getting wait times: %w", err)
+	}
+
+	return results, nil
+}
+
+func (db *DB) GetWaitTimes() ([]*pb.WaitTime, error) {
+	rows, err := db.Query(
+		`SELECT attractions.id, wait_times.wait_time, wait_times.timestamp
+				FROM attractions
+				CROSS JOIN LATERAL (
+					SELECT wait_times.timestamp, wait_times.wait_time
+					FROM wait_times
+					WHERE attractions.id = wait_times.attraction_id
+					ORDER BY wait_times.timestamp DESC NULLS LAST
+					LIMIT 1
+					) wait_times;`)
+	if err != nil {
+		return nil, fmt.Errorf("could not issue query: %w", err)
+	}
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("could not close rows: %v\n", err)
+		}
+	}()
+
+	results := make([]*pb.WaitTime, 0, 10)
+
+	for rows.Next() {
+		var attractionID string
+		var waitTime int32
+		var timestamp time.Time
+		err := rows.Scan(&attractionID, &waitTime, &timestamp)
+		if err != nil {
+			return nil, fmt.Errorf("could not scan row: %w", err)
+		}
+		results = append(results, &pb.WaitTime{
+			AttractionId: attractionID,
+			WaitTime:     waitTime,
+			LastUpdated: &wkt_timestamp.Timestamp{
+				Seconds: timestamp.Unix(),
+			},
 		})
 	}
 
